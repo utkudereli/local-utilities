@@ -110,14 +110,13 @@
     pointer-events: auto;
     max-width: 460px; width: 100%;
     background: var(--surface); border: 1px solid var(--line-soft);
-    border-left: 4px solid var(--cta);
-    border-radius: 10px; padding: 10px 14px; box-shadow: var(--shadow-md);
-    font-size: .9rem; display: flex; gap: 10px; align-items: flex-start;
+    border-radius: 12px; padding: 11px 14px; box-shadow: var(--shadow-md);
+    font-size: .9rem; display: flex; gap: 11px; align-items: flex-start;
     animation: slideIn .25s ease;
   }
-  .notice.warn { border-left-color: var(--cta); }
-  .notice.error { border-left-color: var(--danger); }
-  .notice .n-icon { display: inline-flex; flex-shrink: 0; }
+  .notice .n-icon { display: inline-flex; flex-shrink: 0; color: var(--primary-700); }
+  .notice.warn .n-icon { color: var(--cta-700); }
+  .notice.error .n-icon { color: var(--danger); }
   .notice .n-text { flex: 1 1 auto; }
   .notice svg { width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px; }
   .notice .n-action {
@@ -373,6 +372,12 @@
   /* Touch devices have no hover — always show the remove affordance. */
   @media (hover: none) { .redact-mark::after { opacity: 1; } }
   .redact-drawing { position: absolute; background: rgba(0,0,0,.55); border: 1.5px dashed var(--cta); pointer-events: none; }
+
+  /* Sign stage (mirrors redact-stage: centered, breathing room from the toolbar) */
+  .sign-stage { margin: 20px 0; display: flex; justify-content: center; }
+  .sign-inner { position: relative; line-height: 0; max-width: 100%; }
+  .sign-inner #signCanvas { display: block; max-width: 100%; height: auto; box-shadow: var(--shadow-md); border-radius: 6px; }
+  #signStamp { position: absolute; left: 0; top: 0; cursor: move; touch-action: none; outline: 2px dashed var(--cta); outline-offset: 1px; border-radius: 2px; }
 
   @media (max-width: 540px) {
     .tab { padding: 11px 14px; font-size: .9rem; min-height: 44px; }
@@ -703,16 +708,25 @@
       <input id="signInput" type="file" class="sr-only" accept="application/pdf" />
     </div>
     <div id="signWork" class="hidden">
-      <div class="actions">
-        <button id="signPrev" class="btn btn-secondary" type="button">‹</button>
-        <span id="signPageLabel" class="b64-meta">Page 1</span>
-        <button id="signNext" class="btn btn-secondary" type="button">›</button>
+      <div class="summary" aria-live="polite">
+        <button id="signPrev" class="btn btn-ghost" type="button" aria-label="Previous page">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div class="stat"><span class="label">Page</span><span class="value" id="signPageLabel">1</span></div>
+        <button id="signNext" class="btn btn-ghost" type="button" aria-label="Next page">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
         <div class="spacer"></div>
-        <label class="btn btn-secondary" style="cursor:pointer;">Upload signature PNG<input id="signImgInput" type="file" class="sr-only" accept="image/png,image/*" /></label>
+        <label class="btn btn-secondary" style="cursor:pointer;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Upload signature PNG<input id="signImgInput" type="file" class="sr-only" accept="image/png,image/*" />
+        </label>
       </div>
-      <div id="signStage" style="position:relative; display:inline-block; max-width:100%;">
-        <canvas id="signCanvas" style="max-width:100%; display:block;"></canvas>
-        <img id="signStamp" class="hidden" alt="signature" style="position:absolute; left:0; top:0; cursor:move; touch-action:none; outline:1px dashed #58a6ff;" />
+      <div id="signStage" class="sign-stage">
+        <div class="sign-inner">
+          <canvas id="signCanvas"></canvas>
+          <img id="signStamp" class="hidden" alt="signature" />
+        </div>
       </div>
       <div class="actions">
         <button id="signApply" class="btn btn-primary" type="button">Apply &amp; download</button>
@@ -831,11 +845,15 @@
     <div class="actions">
       <button id="cjToJson" class="btn btn-primary" type="button">CSV → JSON</button>
       <button id="cjToCsv" class="btn btn-secondary" type="button">JSON → CSV</button>
+      <label class="btn btn-ghost" style="cursor:pointer;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Upload file<input id="cjFile" type="file" class="sr-only" accept=".csv,.json,.txt,text/csv,application/json,text/plain" />
+      </label>
       <div class="spacer"></div>
       <button id="cjCopy" class="btn btn-secondary" type="button">Copy output</button>
       <button id="cjClear" class="btn btn-ghost" type="button">Clear</button>
     </div>
-    <label class="b64-label" for="cjInput">Input</label>
+    <label class="b64-label" for="cjInput">Input <span class="b64-meta">paste, or upload a .csv / .json file</span></label>
     <textarea id="cjInput" class="b64-area mono" rows="8" placeholder="Paste CSV or JSON here…" spellcheck="false"></textarea>
     <label class="b64-label" for="cjOutput">Output <span id="cjErr" class="b64-meta"></span></label>
     <textarea id="cjOutput" class="b64-area mono" rows="8" readonly></textarea>
@@ -2411,6 +2429,15 @@
   $("cjToCsv").addEventListener("click", () => cjRun(jsonToCSV));
   $("cjCopy").addEventListener("click", () => navigator.clipboard.writeText($("cjOutput").value));
   $("cjClear").addEventListener("click", () => { $("cjInput").value = ""; $("cjOutput").value = ""; cjErr.textContent = ""; });
+  $("cjFile").addEventListener("change", (e) => {
+    const f = e.target.files && e.target.files[0];
+    if (!f) return;
+    const r = new FileReader();
+    r.onload = () => { $("cjInput").value = String(r.result || ""); cjErr.textContent = ""; };
+    r.onerror = () => { cjErr.textContent = "⚠ Couldn't read that file."; };
+    r.readAsText(f);
+    e.target.value = ""; // allow re-selecting the same file
+  });
 
   // ---- Text diff (line-level LCS) ----
   // ponytail: O(n*m) DP — fine for pasted text; cap guards pathological inputs.
@@ -2569,7 +2596,7 @@
     const vp = pdfPage.getViewport({ scale: 1.5 });
     const c = $("signCanvas"); c.width = vp.width; c.height = vp.height;
     await pdfPage.render({ canvasContext: c.getContext("2d"), viewport: vp }).promise;
-    $("signPageLabel").textContent = `Page ${signPageNum} / ${signPageCount}`;
+    $("signPageLabel").textContent = `${signPageNum} / ${signPageCount}`;
     positionStamp();
   }
   function positionStamp() {

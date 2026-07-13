@@ -1,123 +1,90 @@
 # Local Utilities
 
-A tiny, **fully local** utility toolkit that runs entirely in your browser — nothing is ever uploaded to a server. Merge/split/compress PDFs, convert images, strip EXIF, redact documents, convert CSV↔JSON, encode Base64, and more.
+Everyday file tools that run in your browser and never upload anything. Merge, split, compress and sign PDFs, convert images, strip EXIF, redact documents, convert CSV and JSON, encode and decode Base64.
 
-**Why this exists:** most "free online PDF/image tools" upload your files to someone else's server. This one physically can't — a strict Content-Security-Policy blocks all network access, so your documents never leave your machine. It's open source (MIT) so you can read every line and run it yourself, safely, forever.
+Most "free online PDF tools" send your files to someone else's server. This one can't: a strict Content-Security-Policy blocks all network access, so your files stay on your machine. It's open source (MIT), so you can read the code and run it yourself.
 
-A sidebar groups the tools into sections:
+A sidebar groups the tools into sections.
 
 ### PDF
-- **Merge** — upload multiple PDFs, drag to reorder, see a live total-size estimate, then merge and download.
-- **Split** — upload one PDF, see a thumbnail of every page, click the scissors between pages to set where it breaks (or use *Burst* / *Every N pages*), then download all parts as a `.zip`. Each colored "Part" becomes its own file.
-- **Compress** — shrink a PDF by re-rendering pages as optimized images (High/Medium/Low). Great for scans; note that text becomes non-selectable.
-- **Images → PDF** — drop images (JPG/PNG/WebP/GIF), reorder them, choose page size (Fit / A4 / Letter), and export one PDF.
-- **Redact** — draw black boxes over sensitive areas. On export the document is flattened to images, so the underlying text/images are **permanently removed**, not just hidden.
-- **Sign** — drop a PDF, upload a signature/stamp PNG, drag it into place over any page, then export. The image is embedded and the document's text **stays selectable** (no flattening).
+- **Merge**: add multiple PDFs, drag to reorder, see a live total-size estimate, then merge and download.
+- **Split**: load one PDF, see a thumbnail of every page, click the scissors between pages to set the breaks (or use *Burst* / *Every N pages*), then download all parts as a `.zip`. Each colored "Part" becomes its own file.
+- **Compress**: shrink a PDF by re-rendering pages as optimized images (High/Medium/Low). Good for scans. Text becomes non-selectable.
+- **Images to PDF**: add images (JPG/PNG/WebP/GIF), reorder them, pick a page size (Fit / A4 / Letter), and export one PDF.
+- **Redact**: draw black boxes over sensitive areas. On export the document is flattened to images, so what's under a box is removed, not just hidden.
+- **Sign**: load a PDF, upload a signature or stamp PNG, drag it into place on any page, then export. The image is embedded and the text stays selectable.
 
 ### Image
-- **Strip EXIF** — drop photos (JPG/PNG/WebP) to remove embedded metadata (GPS location, camera make/model, timestamps) by re-encoding, then download the clean image.
-- **Background Remover** — drop an image and remove a solid-color background (with an adjustable tolerance), exporting a transparent PNG.
+- **Strip EXIF**: remove embedded metadata (GPS location, camera model, timestamps) from JPG/PNG/WebP by re-encoding, then download the clean image.
+- **Background Remover**: remove a solid-color background (with adjustable tolerance) and export a transparent PNG.
 
 ### Data
-- **CSV ↔ JSON** — paste CSV or JSON and convert in either direction; quoting/commas are handled and round-trip safely.
-- **Text Diff** — paste two texts to see a line-level diff with added/removed/unchanged lines highlighted.
+- **CSV / JSON**: paste text or upload a `.csv` / `.json` file, then convert in either direction. Quoting and commas are handled and round-trip safely.
+- **Text Diff**: paste two blocks of text to see a line-by-line diff.
 
 ### Base64
-- **Encode** — type/paste text or CSV, or drop/paste an image or any file, to get its Base64 (files become a `data:` URL, directly usable in `<img src>`/CSS). UTF-8 safe.
-- **Decode** — paste raw Base64 or a `data:` URL to get the text back, or preview/download the original image or file (type detected from the `data:` prefix or magic bytes).
+- **Encode**: type or paste text, or drop a file, to get its Base64. Files become a `data:` URL you can drop straight into `<img src>` or CSS. UTF-8 safe.
+- **Decode**: paste raw Base64 or a `data:` URL to get the text back, or preview and download the original file (type detected from the prefix or magic bytes).
 
-## Why it's private & secure
+## Why it stays private
 
-- **No backend, no database, no accounts.** Just one HTML file plus local libraries.
-- **No network egress.** A strict `Content-Security-Policy` blocks all outbound connections (`default-src 'none'`). Your PDFs physically cannot leave your machine.
-- **Libraries are vendored** in `vendor/` — no CDN calls at runtime.
-- All processing (thumbnails + merge) happens in your browser via WebAssembly/JS.
+- No backend, no database, no accounts. One HTML file plus local libraries.
+- No network access. A strict `Content-Security-Policy` (`default-src 'none'`) blocks outbound connections, so files never leave your machine.
+- Libraries are vendored in `vendor/`, so there are no CDN calls at runtime.
+- All processing happens in your browser.
 
 ## How to run
 
-### Get it
+Clone it:
 
 ```bash
 git clone https://github.com/utkudereli/local-utilities.git
 cd local-utilities
 ```
 
-No build step, no `npm install` needed to *use* it — the app has zero runtime dependencies (libraries are vendored). You only need Python 3 (preinstalled on macOS) to serve it locally.
+There's no build step and no `npm install` needed to use it. You only need Python 3 (preinstalled on macOS) to serve it locally.
 
 ### Install as an app (recommended)
-The app is a PWA. Run it once over the local server, then use your browser's **Install** action (Chrome: the install icon in the address bar) to add **Utilities** to your Dock/Launchpad. It then opens in its own window and works offline (a service worker caches everything).
+
+The app is a PWA. Run it once over the local server, then use your browser's **Install** action (in Chrome, the install icon in the address bar) to add Local Utilities to your Dock or Launchpad. It opens in its own window and works offline.
 
 ### Always-on background server (macOS)
-So the installed app launches instantly without keeping a Terminal window open, a LaunchAgent runs the loopback server in the background and starts it at login:
+
+So the app launches without keeping a Terminal window open, a LaunchAgent runs the loopback server in the background and starts it at login:
 
 ```bash
-# install / start (auto-starts at login, restarts if it stops)
-service/install-service.command
-
-# stop & remove
-service/uninstall-service.command
+service/install-service.command    # install and start (auto-starts at login)
+service/uninstall-service.command  # stop and remove
 ```
 
-This serves `http://127.0.0.1:8765` (loopback only — nothing is reachable from other devices). Logs: `/tmp/pdf-tools.log`, `/tmp/pdf-tools.err`.
+This serves `http://127.0.0.1:8765` on loopback only, so nothing is reachable from other devices. Logs go to `/tmp/local-utilities.log` and `/tmp/local-utilities.err`.
 
 ### Or run it manually
-From this folder:
 
 ```bash
 python3 -m http.server 8765 --bind 127.0.0.1
 ```
 
-Then open http://localhost:8765/index.html . (Opening `index.html` directly via `file://` also works, but a local server is recommended — some browsers restrict web workers and the service worker on `file://`.)
-
-## Using it
-
-Pick a section in the left sidebar (**PDF**, **Image**, **Data**, or **Base64**); the sub-tabs along the top switch tools within that section.
-
-**Merge**
-1. Drop PDFs onto the page (or click to browse). Add as many as you like.
-2. Reorder by dragging the handle, or with the ▲ ▼ buttons. Files merge **top → bottom**.
-3. Remove any file with the ✕ button, or **Clear all** to reset.
-4. Click **Merge** → **Download**.
-
-**Split**
-1. Drop a single PDF. Every page renders as a thumbnail.
-2. Click a scissors slot between two pages to add/remove a cut — each colored **Part** becomes one output PDF. Or use **Burst** (every page) / **Every N pages**.
-3. Click **Split into N files** → **Download .zip**.
-
-**Compress**
-1. Drop a PDF, pick a quality (Medium is a good start; Low for the smallest file).
-2. Click **Compress** → **Download**. The result shows the before/after size.
-
-**Images → PDF**
-1. Drop images, reorder with the handle or ▲ ▼ buttons.
-2. Choose page size, then **Create PDF** → **Download**.
-
-**Redact**
-1. Drop a PDF. Click-and-drag on the page to draw a black box; click a box to remove it. Use ‹ › to change pages.
-2. Click **Apply & download**. The exported PDF is flattened to images so redacted content is unrecoverable.
-
-**Base64**
-1. **Encode → Base64:** type/paste text or CSV, or drop/paste/browse a file, then **Copy** the Base64 output.
-2. **Base64 → Decode:** paste Base64 (or a `data:` URL), click **Decode**, then copy the text or preview/download the file.
+Then open http://localhost:8765/index.html . Opening `index.html` directly with `file://` mostly works too, but a local server is more reliable because some browsers restrict web workers and service workers on `file://`.
 
 ## Testing
 
-A Playwright end-to-end suite drives the real UI in headless Chrome (uses your installed Chrome — no browser download) and validates the actual merged/split output:
+A Playwright suite drives the real UI in headless Chrome (using your installed Chrome, no download) and checks the actual output:
 
 ```bash
-npm install        # dev-only: pdf-lib + playwright (the app itself has no deps)
-npm run test:e2e   # 88 checks across all tools, incl. zip/PDF output + Base64 round-trip validation
+npm install
+npm run test:e2e
 ```
 
 ## Stack
 
-- [pdf-lib](https://pdf-lib.js.org) — merging & splitting
-- [pdf.js](https://mozilla.github.io/pdf.js) — page thumbnails + page counts
-- [SortableJS](https://sortablejs.github.io/Sortable) — drag-and-drop reordering
-- [JSZip](https://stuk.github.io/jszip) — bundling split parts into a `.zip`
+- [pdf-lib](https://pdf-lib.js.org): merging and splitting
+- [pdf.js](https://mozilla.github.io/pdf.js): page thumbnails and counts
+- [SortableJS](https://sortablejs.github.io/Sortable): drag-to-reorder
+- [JSZip](https://stuk.github.io/jszip): bundling split parts into a `.zip`
 
-All libraries are vendored in `vendor/`. The app has **no build step and no runtime dependencies**.
+All libraries are vendored in `vendor/`. No build step, no runtime dependencies.
 
 ## License
 
-[MIT](LICENSE) © Utku Dereli. Free to use, modify, and share. No warranty — it runs entirely on your own machine.
+[MIT](LICENSE), Utku Dereli. Free to use, modify, and share. No warranty; it runs on your own machine.
