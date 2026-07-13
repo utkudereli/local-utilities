@@ -1726,7 +1726,9 @@
   // Drag to move (pointer events on the stamp).
   (function enableStampDrag() {
     const img = $("signStamp"); let dragging = false, sx = 0, sy = 0, ox = 0, oy = 0;
+    img.addEventListener("dragstart", (e) => e.preventDefault()); // stop native image drag
     img.addEventListener("pointerdown", (e) => {
+      e.preventDefault();                                          // else the browser starts a native image drag on the first move
       dragging = true; img.setPointerCapture(e.pointerId);
       sx = e.clientX; sy = e.clientY; ox = parseFloat(img.style.left) || 0; oy = parseFloat(img.style.top) || 0;
     });

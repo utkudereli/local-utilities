@@ -2,7 +2,7 @@
    The app makes no network requests at runtime, so a cache-first
    strategy gives full offline support and enables installability.
    Bump CACHE on every release so the old cached shell is purged. */
-const CACHE = "utilities-v5";
+const CACHE = "utilities-v6";
 const ASSETS = [
   "./index.html",
   "./styles.css",
