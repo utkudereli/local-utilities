@@ -59,7 +59,7 @@ import { $, fmtSize, notice, nextFrame, prefersReduced, scrollToEl, attachDropHi
   })();
 
   async function addSignFile(file) {
-    if (!file || file.type !== "application/pdf") return;
+    if (!file || !(file.type === "application/pdf" || /\.pdf$/i.test(file.name))) return;
     signPdfBytes = await file.arrayBuffer();
     signPageNum = 1;
     $("signDrop").classList.add("hidden");

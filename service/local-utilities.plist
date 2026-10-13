@@ -8,11 +8,8 @@
   <key>ProgramArguments</key>
   <array>
     <string>/usr/bin/python3</string>
-    <string>-m</string>
-    <string>http.server</string>
+    <string>service/serve.py</string>
     <string>8765</string>
-    <string>--bind</string>
-    <string>127.0.0.1</string>
   </array>
   <key>WorkingDirectory</key>
   <string>__WORKDIR__</string>

@@ -2,7 +2,7 @@
   "name": "Utilities",
   "short_name": "Utilities",
   "description": "Local, private utility toolkit — PDF (merge, split, compress, images to PDF, redact) and a Base64 converter. Everything runs in your browser.",
-  "start_url": "./index.html",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f0fdfa",

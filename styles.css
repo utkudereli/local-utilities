@@ -242,11 +242,24 @@
   footer a { color: var(--primary-700); }
 
   @media (max-width: 720px) {
-    .shell { flex-direction: column; gap: 16px; padding: 22px 16px 60px; }
+    .shell { flex-direction: column; align-items: stretch; gap: 16px; padding: 22px 16px 60px; }
     .sidebar { width: 100%; position: static; }
     .brand { margin-bottom: 12px; }
-    .side-nav { flex-direction: row; gap: 6px; }
-    .side-item { width: auto; justify-content: center; }
+    /* Sections become an equal-width icon+label bar that always fits the screen. */
+    .side-nav { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .side-item { width: auto; min-width: 0; flex-direction: column; justify-content: center; gap: 3px; padding: 8px 4px; min-height: 56px; font-size: .82rem; text-align: center; background: var(--surface); border-color: var(--line-soft); }
+  }
+
+  /* Touch screens can't drag files in: show an explicit pick button in every drop zone
+     (the whole zone is the tap target; the button just makes that obvious). */
+  @media (pointer: coarse) {
+    /* iOS Safari zooms the page on focus of any field under 16px. */
+    input, textarea, select, .b64-area, .b64-area.mono { font-size: 16px; }
+    .dropzone { padding: 28px 18px; }
+    .dropzone::after {
+      content: "Choose file"; display: inline-flex; align-items: center; min-height: 44px; margin-top: 14px;
+      padding: 0 20px; border-radius: 10px; background: var(--primary); color: #fff; font-weight: 600; font-size: .95rem;
+    }
   }
 
   @media (max-width: 540px) {
@@ -256,7 +269,10 @@
     /* 44px touch targets on mobile (icon stays visually small via padding) */
     .icon-btn { width: 44px; height: 44px; }
     .drag-handle { width: 40px; height: 44px; }
-    .row-actions { gap: 4px; }
+    .row-actions { gap: 4px; margin-left: auto; }
+    /* Keep the file name readable: the 44px row buttons wrap to a second line instead. */
+    li.file { flex-wrap: wrap; gap: 8px 10px; }
+    .finfo { flex: 1 1 120px; }
   }
 
   /* Tabs */
@@ -364,6 +380,7 @@
 
   @media (max-width: 540px) {
     .tab { padding: 11px 14px; font-size: .9rem; min-height: 44px; }
+    .btn, .select { min-height: 44px; }
     .pthumb { width: 60px; height: 78px; }
     .cut-slot { width: 44px; min-height: 78px; }
     .presets { width: 100%; }

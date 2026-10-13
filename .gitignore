@@ -6,3 +6,6 @@ node_modules/
 tests/fixtures/
 _dev-docs (superpowers)
 docs/superpowers/
+
+# Written by tests/mobile.mjs.
+tests/screenshots-mobile/

@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "Local, private, in-browser utility toolkit — PDF, image, data & base64. No backend, no network egress.",
   "scripts": {
-    "serve": "python3 -m http.server 8765 --bind 127.0.0.1",
-    "test:e2e": "node tests/make-fixtures.mjs && node tests/e2e.mjs"
+    "serve": "python3 service/serve.py 8765",
+    "test:e2e": "node tests/make-fixtures.mjs && node tests/e2e.mjs && node tests/mobile.mjs"
   },
   "devDependencies": {
     "pdf-lib": "^1.17.1",

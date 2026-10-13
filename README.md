@@ -46,7 +46,7 @@ There's no build step and no `npm install` needed to use it. You only need Pytho
 
 ### Install as an app (recommended)
 
-The app is a PWA. Run it once over the local server, then use your browser's **Install** action (in Chrome, the install icon in the address bar) to add Local Utilities to your Dock or Launchpad. It opens in its own window and works offline.
+The app is a PWA. Run it once over the local server, then use your browser's **Install** action (in Chrome, the install icon in the address bar) to add Local Utilities to your Dock or Launchpad. On iPhone/iPad there is no install prompt: open it in Safari, then Share → Add to Home Screen. It opens in its own window and works offline.
 
 ### Always-on background server (macOS)
 
@@ -62,7 +62,7 @@ This serves `http://127.0.0.1:8765` on loopback only, so nothing is reachable fr
 ### Or run it manually
 
 ```bash
-python3 -m http.server 8765 --bind 127.0.0.1
+python3 service/serve.py 8765   # stdlib http.server with a bigger listen backlog
 ```
 
 Then open http://localhost:8765/index.html . Opening `index.html` directly with `file://` mostly works too, but a local server is more reliable because some browsers restrict web workers and service workers on `file://`.

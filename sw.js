@@ -2,8 +2,9 @@
    The app makes no network requests at runtime, so a cache-first
    strategy gives full offline support and enables installability.
    Bump CACHE on every release so the old cached shell is purged. */
-const CACHE = "utilities-v8";
+const CACHE = "utilities-v9";
 const ASSETS = [
+  "./",
   "./index.html",
   "./styles.css",
   "./app.js",
@@ -29,6 +30,7 @@ const ASSETS = [
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./icons/icon-512-maskable.png",
+  "./icons/apple-touch-icon.png",
 ];
 
 self.addEventListener("install", (event) => {
