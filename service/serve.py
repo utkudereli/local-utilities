@@ -8,16 +8,36 @@ import kills the whole app (no nav, dead drop zones) and the service worker's
 precache fails so the installed PWA never works offline.
 """
 import http.server
+import posixpath
 import sys
+import urllib.parse
 
 
 class Server(http.server.ThreadingHTTPServer):
     request_queue_size = 128
 
 
+# Serve only the app, not the repo (.git, service/, tests/, ...); no directory listings.
+APP = {"", "index.html", "app.js", "styles.css", "sw.js", "manifest.webmanifest", "icons", "js", "vendor"}
+
+
+class Handler(http.server.SimpleHTTPRequestHandler):
+    def send_head(self):
+        path = posixpath.normpath(urllib.parse.unquote(self.path.split("?", 1)[0].split("#", 1)[0]))
+        top = path.lstrip("/").split("/", 1)[0]
+        if top not in APP:
+            self.send_error(404)
+            return None
+        return super().send_head()
+
+    def list_directory(self, path):
+        self.send_error(404)
+        return None
+
+
 port = int(sys.argv[1]) if len(sys.argv) > 1 else 8765
 http.server.test(
-    HandlerClass=http.server.SimpleHTTPRequestHandler,
+    HandlerClass=Handler,
     ServerClass=Server,
     protocol="HTTP/1.1",  # keep-alive: fewer new connections per page load
     port=port,
